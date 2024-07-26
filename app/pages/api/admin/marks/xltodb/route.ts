@@ -1,147 +1,85 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { Readable } from 'stream';
 import ExcelJS from 'exceljs';
+import { Buffer } from 'buffer';
 import conn from '@/app/lib/db';
 
-export const config = {
-    api: {
-        bodyParser: false,
-    },
-};
-
-interface FormFields {
-    [key: string]: string | undefined;
+interface FileHandler {
+    file?: string;
+    filename?: string;
     batch?: string;
-    sem?: string;
+    sem?: number;
     course?: string;
 }
 
-export async function POST(req: NextApiRequest, res: NextApiResponse) {
-    if (req.method !== 'POST') {
-        res.setHeader('Allow', ['POST']);
-        return res.status(405).end(`Method ${req.method} Not Allowed`);
-    }
-
+export async function POST(req: Request) {
     try {
-        const { fields, fileBuffer } = await parseFormData(req);
-        const { batch, sem, course } = fields;
+        const { file, filename, batch, sem, course } = await req.json() as FileHandler;
+        console.log(req.body);
 
-        if (!batch || !sem || !course || !fileBuffer) {
-            return new Response("Please Provide all the required fields",{status: 400});
+        if (!file || !batch || !sem || !course || !filename) {
+            return new Response("Please provide all required fields and the file.", { status: 400 });
         }
 
+        // Convert base64 file to Buffer
+        const fileBuffer = Buffer.from(file, 'base64');
         const parsedData = await parseExcel(fileBuffer);
 
+        const rows = parsedData;
+        // Connect to the database
+        const attributes = rows[0]; // Assuming the first row contains the attribute names
+        attributes.shift(); // Remove the first element from the array
+        rows.shift(); // Remove the first row from the array
         const client = await conn.connect();
         try {
+
             await client.query('BEGIN');
-            const courseDigit = course.toLowerCase() === 'btech' ? '1' : '2';
-            const tableName = `sem${sem}_batch${batch}_cse_${course.toLowerCase()}`;
+            let course_digit = course.toLowerCase() === 'btech' ? '1' : '2';
+            const TableName = `sem${sem}_batch${batch}_cse_${course}`;
 
-            if (!/^[a-z0-9_]+$/.test(tableName)) {
-                throw new Error("Invalid table name.");
-            }
-
-            const attributes = parsedData[0];
-            attributes.shift(); // Remove the first element from the array
-
-            const createTableQuery: string = `
-                CREATE TABLE IF NOT EXISTS ${tableName} (
-                anomalie INT,
-                roll VARCHAR(10) NOT NULL,
-                ${attributes.map((attribute: string) => `${attribute} VARCHAR(255)`).join(',\n')},
-                PRIMARY KEY (roll)
+            const createTableQuery = `
+            CREATE TABLE IF NOT EXISTS ${TableName} (
+            anomalie INT,
+            roll VARCHAR(10) NOT NULL,   
+            ${attributes.map((attribute: string, _: any) => `${attribute} VARCHAR(255)`).join(',\n')},
+            PRIMARY KEY (roll)
             )`;
 
             await client.query(createTableQuery);
 
-            for (let row of parsedData.slice(1)) {
+            for (let row of rows) {
                 let anomalie = 0;
-                const rollNumber = row[0];
-                if (rollNumber.slice(0, 2) !== batch || rollNumber.slice(3, 4) !== courseDigit) {
+                const rollNumber = String(row[0]);
+                if ((rollNumber.slice(0, 2) !== batch) || (rollNumber.slice(3, 4) !== course_digit)) {
                     anomalie = 1;
                 }
 
-                const insertQuery = `
-                    INSERT INTO ${tableName} (anomalie, roll, ${attributes.join(', ')})
-                    VALUES ($1, $2, ${attributes.map((_: any, index: number) => `$${index + 3}`).join(', ')})
-                    ON CONFLICT (roll) DO NOTHING`;
+                const insertQuery =
+                `INSERT INTO ${TableName} (anomalie, roll, ${attributes.map((attribute: string, _: any) => `${attribute}`).join(', ')})
+                VALUES ($1, $2, ${attributes.map((_: any, index: number) => `$${index + 3}`)})`; // Use placeholders to prevent SQL injection
 
                 row.unshift(anomalie);
+                //  console.log(insertQuery);
                 await client.query(insertQuery, row);
             }
-
             await client.query('COMMIT');
-            return new Response("Table migrated successfully from spreadsheet to database",{
+            // res.status(200).json({message: 'Table migrated successfully from spreadsheet to database'})
+            return new Response("Table migrated successfully from spreadsheet to database", {
                 status: 200
             })
         } catch (error) {
             await client.query('ROLLBACK');
-            return new Response(`Error inserting data into database: ${error}`,{
+            // res.status(400).json({message: 'Error inserting data into database', error: error});
+            return new Response(`Error inserting data into database: ${error}`, {
                 status: 400
             });
         } finally {
             client.release();
         }
     } catch (error) {
-        return new Response(`Error fetching data from sheets: ${error}`,{
+        // console.error('Error fetching data from Google Sheets:', error);
+        return new Response(`Error fetching data form Google Sheets: ${error}`, {
             status: 500
         })
     }
-};
-
-async function parseFormData(req: NextApiRequest): Promise<{ fields: FormFields; fileBuffer: Buffer }> {
-    // const contentType = req.headers['content-type'] || '';
-    // const boundary = contentType.split('boundary=')[1]?.trim();
-    const boundary = '----WebKitFormBoundary7MA4YWxkTrZu0gW';
-    if (!boundary) {
-        throw new Error(`Boundary not found in Content-Type header`);
-    }
-
-    const chunks: Uint8Array[] = [];
-    req.on('data', chunk => chunks.push(chunk));
-
-    return new Promise((resolve, reject) => {
-        req.on('end', () => {
-            const buffer = Buffer.concat(chunks);
-            const formData = parseMultipart(buffer, boundary);
-            
-            if (!formData.fileBuffer) {
-                reject(new Error('File not found in form data'));
-                return;
-            }
-
-            resolve({ fields: formData.fields, fileBuffer: formData.fileBuffer });
-        });
-
-        req.on('error', reject);
-    });
-}
-
-function parseMultipart(buffer: Buffer, boundary: string): { fields: FormFields; fileBuffer: Buffer } {
-    const formData: { fields: FormFields; fileBuffer: Buffer | null } = { fields: {}, fileBuffer: null };
-    const boundaryString = `--${boundary}`;
-    const parts = buffer.toString().split(boundaryString);
-
-    for (const part of parts) {
-        if (part.includes('Content-Disposition: form-data; name="')) {
-            const nameMatch = part.match(/name="([^"]+)"/);
-            if (nameMatch) {
-                const name = nameMatch[1];
-                const value = part.split('\r\n\r\n')[1]?.split('\r\n--')[0];
-                if (name === 'file') {
-                    formData.fileBuffer = Buffer.from(value || '', 'binary');
-                } else {
-                    formData.fields[name] = value || '';
-                }
-            }
-        }
-    }
-
-    if (!formData.fileBuffer) {
-        throw new Error('File buffer is null');
-    }
-    return { fields: formData.fields, fileBuffer: formData.fileBuffer };
 }
 
 async function parseExcel(fileData: Buffer): Promise<any[]> {
@@ -157,4 +95,3 @@ async function parseExcel(fileData: Buffer): Promise<any[]> {
 
     return data;
 }
-

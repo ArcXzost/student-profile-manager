@@ -7,12 +7,13 @@ interface MarksEntry {
     roll?: string;
     courseID?: string;
     grade?: string;
+    branch?: string;
 }
 
 export async function PUT(req: Request) {
     try {
-        const { batch, sem, course, roll, courseID, grade } = await req.json() as MarksEntry;
-        if (!batch || !sem || !course || !roll || !courseID || !grade) {
+        const { batch, sem, course, roll, courseID, grade, branch } = await req.json() as MarksEntry;
+        if (!batch || !sem || !course || !roll || !courseID || !grade || !branch) {
             return new Response("Please Provide all the required fields", { status: 400 });
         }
         const client = await conn.connect();

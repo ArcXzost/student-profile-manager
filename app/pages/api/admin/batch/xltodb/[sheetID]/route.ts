@@ -5,14 +5,15 @@ import credentials from '@/app/lib/credentials';
 interface Marks {
     batch?: string;
     course?: string;
+    branch?: string;
 }
 
 
 export async function POST(req: Request, { params }: { params: { sheetID: string } }) {
     try {
-        const { batch, course } = await req.json() as Marks;
+        const { batch, course, branch } = await req.json() as Marks;
         const sheetID = params.sheetID;
-        if (!batch || !course) {
+        if (!batch || !course || !branch) {
             return new Response("Please Provide all the required fields", { status: 400 });
         }
         // Authenticate using the credentials
@@ -34,7 +35,7 @@ export async function POST(req: Request, { params }: { params: { sheetID: string
         try {
 
             await client.query('BEGIN');
-            const TableName = `batch${batch}_${course}`;
+            const TableName = `batch${batch}_${branch}_${course}`;
 
             const createTableQuery = `
                 CREATE TABLE IF NOT EXISTS ${TableName} (

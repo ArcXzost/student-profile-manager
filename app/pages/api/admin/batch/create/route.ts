@@ -1,34 +1,41 @@
 import conn from '@/app/lib/db';
 
-interface createTable {
+
+interface createTable{
     batch?: string;
-    sem?: number;
+    sem?: string;
     course?: string;
-    courseID?: string[];
     branch?: string;
 }
 
 export async function POST(req: Request) {
     try {
-        const { batch, sem, course, courseID, branch} = await req.json() as createTable;
-        if (!batch || !sem || !course || !courseID  || !branch) {
+        const { batch, sem, course, branch } = await req.json() as createTable;
+        if (!batch || !sem || !course || !branch) {
             return new Response("Please Provide all the required fields", { status: 400 });
         }
         const client = await conn.connect();
         try {
+
             await client.query('BEGIN');
-            
-            const TableName = `sem${sem}_batch${batch}_${branch}_${course}`;
+            const TableName = `batch${batch}_${branch}_${course}`;
 
-            const CreateTableQuery = `
-            CREATE TABLE IF NOT EXISTS ${TableName} (
-            anomalie INT,
-            roll VARCHAR(10) NOT NULL,   
-            ${courseID.map((attribute: string, _: any) => `${attribute} VARCHAR(255)`).join(',\n')},
-            PRIMARY KEY (roll)
-            )`;
+            const createTableQuery = `
+                CREATE TABLE IF NOT EXISTS ${TableName} (
+                name VARCHAR(255),
+                roll VARCHAR(255),
+                dob DATE,
+                address TEXT,
+                branch VARCHAR(255),
+                email VARCHAR(255),
+                father VARCHAR(255),
+                mother VARCHAR(255),
+                PRIMARY KEY (roll)
+                )`;
 
-            await client.query(CreateTableQuery);
+            console.log(createTableQuery);
+
+            await client.query(createTableQuery);
 
             await client.query('COMMIT');
         }

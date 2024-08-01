@@ -7,14 +7,14 @@ interface Marks {
     batch?: string;
     sem?: number;
     course?: string;
+    branch?: string;
   }
 
 export async function POST(req: Request, {params}:{params: {sheetID: string}}) {
     try {
-        const {batch, sem, course} =await req.json() as Marks;
+        const {batch, sem, course, branch} =await req.json() as Marks;
         const sheetID = params.sheetID;
-        if (!batch || !sem || !course) {
-            console.log(batch,sem,course);
+        if (!batch || !sem || !course || !branch) {
             return new Response("Please Provide all the required fields",{status: 400});
         }   
         // Authenticate using the credentials
@@ -40,7 +40,7 @@ export async function POST(req: Request, {params}:{params: {sheetID: string}}) {
 
             await client.query('BEGIN');
             let course_digit = course.toLowerCase() === 'btech' ? '1' : '2';
-            const TableName = `sem${sem}_batch${batch}_cse_${course}`;
+            const TableName = `sem${sem}_batch${batch}_${branch}_${course}`;
 
             const createTableQuery = `
             CREATE TABLE IF NOT EXISTS ${TableName} (

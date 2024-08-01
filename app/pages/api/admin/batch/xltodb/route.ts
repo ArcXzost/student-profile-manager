@@ -8,14 +8,15 @@ interface FileHandler {
     batch?: string;
     sem?: number;
     course?: string;
+    branch?: string;
 }
 
 export async function POST(req: Request) {
     try {
-        const { file, filename, batch, sem, course } = await req.json() as FileHandler;
+        const { file, filename, batch, sem, course, branch } = await req.json() as FileHandler;
         console.log(req.body);
 
-        if (!file || !batch || !sem || !course || !filename) {
+        if (!file || !batch || !sem || !course || !filename || !branch) {
             return new Response("Please provide all required fields and the file.", { status: 400 });
         }
 
@@ -29,7 +30,7 @@ export async function POST(req: Request) {
         try {
 
             await client.query('BEGIN');
-            const TableName = `batch${batch}_${course}`;
+            const TableName = `batch${batch}_${branch}_${course}`;
 
             const createTableQuery = `
                 CREATE TABLE IF NOT EXISTS ${TableName} (

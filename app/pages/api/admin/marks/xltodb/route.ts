@@ -1,6 +1,6 @@
 import { Buffer } from 'buffer';
 import conn from '@/app/lib/db';
-import parseExcel from '@app/lib/parse';
+import parseExcel from '@/app/lib/parse';
 
 interface FileHandler {
     file?: string;

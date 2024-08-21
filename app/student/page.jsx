@@ -6,7 +6,7 @@ import Course from '../ui/student/courses/courses.jsx'
 import Graph from '../ui/student/analytics/graph.jsx'
 import Srightbar from '../ui/student/Srightbar/Srightbar.jsx'
 import Chart from '../ui/dashboard/chart/chart.jsx'
-import { options } from "../api/auth/[...nextauth]/options.js"
+import { options } from "@/app/lib/auth"
 import { getServerSession } from "next-auth/next"
 import { redirect } from "next/navigation"
 

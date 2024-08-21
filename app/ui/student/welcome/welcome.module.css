@@ -2,12 +2,13 @@
     font-family: "Fondamento", cursive;
     font-weight: 400;
     font-style: italic;
+    display: flex;
 }
 
 
 .container {
     display: flex;
-    justify-content: center;
+    justify-content:space-between;
     align-items: center;
     background-color: var(--bgSoft);
     border-radius: 20px;
@@ -42,5 +43,4 @@
 
 .image{
     border: none;
-    margin-left: 40px;
 }

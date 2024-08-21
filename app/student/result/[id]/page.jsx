@@ -9,14 +9,14 @@ const page = () => {
             <div className={styles.top}>
                 <select className={styles.select}>
                     <option value="Semester">Semester</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
+                    <option value="Sem 1">1</option>
+                    <option value="Sem 2">2</option>
+                    <option value="Sem 3">3</option>
+                    <option value="Sem 4">4</option>
+                    <option value="Sem 5">5</option>
+                    <option value="Sem 6">6</option>
+                    <option value="Sem 7">7</option>
+                    <option value="Sem 8">8</option>
                 </select>
             </div>
             <div className={styles.result}>

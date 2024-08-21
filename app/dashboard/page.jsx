@@ -9,10 +9,6 @@ import { config } from "@fortawesome/fontawesome-svg-core";
 config.autoAddCss = false;
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPersonChalkboard, faUserGraduate, faBook } from "@fortawesome/free-solid-svg-icons";
-import { options } from "@/app/lib/auth"
-import { getServerSession } from "next-auth/next"
-import { redirect } from "next/navigation"
-import { useSession } from 'next-auth/react'
 
 const data = [
   {
@@ -39,19 +35,9 @@ const data = [
 ]
 
 const dashboard = async () => {
-
-  const session = await getServerSession(options)
-
-  if (!session) {
-    redirect('/api/auth/signin?callbackUrl=/dashboard')
-  }
-
-  const user = session.user
-  console.log(user.name)
-  
   return (
     <>
-      {(session && user.name == "admin")?(
+      {(
       <div className={styles.wrapper} >
         <div className={styles.main}>
           <div className={styles.cards}>
@@ -87,7 +73,7 @@ const dashboard = async () => {
         <div className={styles.side}>
           <Rightbar />
         </div>
-      </div>): redirect('/api/auth/signin?callbackUrl=/dashboard')
+      </div>)
 }
     </>
   )

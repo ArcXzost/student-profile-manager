@@ -1,7 +1,6 @@
 import { getStudentInfo } from '@/app/lib/marks';
 import { getServerSession } from 'next-auth/next';
 import { options } from '@/app/lib/auth';
-import { NextRequest as Request, NextResponse as Response } from 'next/server';
 import { User } from '@/app/lib/auth';
 
 interface Student {

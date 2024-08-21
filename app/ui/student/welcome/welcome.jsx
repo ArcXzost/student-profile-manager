@@ -14,7 +14,7 @@ const Welcome = (props) => {
                 <div className={styles.date}>{formattedDate}</div>
                 <div className={styles.welcome}>
                     <h1 className={styles.fondamentoregular}>Welcome back {props.name}</h1>
-                    <p>Always Stay Updated in your student portal!</p>
+                    <p>Always Stay Updated with Academics with your Student Portal!</p>
                 </div>
             </div>
             <div className={styles.image}>

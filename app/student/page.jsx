@@ -5,31 +5,14 @@ import styles from '../ui/student/student.module.css'
 import Course from '../ui/student/courses/courses.jsx'
 import Graph from '../ui/student/analytics/graph.jsx'
 import Srightbar from '../ui/student/Srightbar/Srightbar.jsx'
-import Chart from '../ui/dashboard/chart/chart.jsx'
-import { options } from "@/app/lib/auth"
-import { getServerSession } from "next-auth/next"
-import { redirect } from "next/navigation"
 
 const page = async () => {
-    const session = await getServerSession(options)
-
-    if (!session) {
-        redirect('/api/auth/signin?callbackUrl=/student')
-    }
-
-    const user = session.user;
-    if(user.name == "admin"){
-        redirect('/api/auth/signin?callbackUrl=/student')
-    }
-
-    console.log(user);
-    const name = user.name;
     
     return (
         <>
-            {session ? (
+            {(
                 <>
-            <Welcome name = {name}/>
+            <Welcome/>
             <div className={styles.container}>
                 <div className={styles.wrapper}>
                     <h2 className={styles.heading}>Finance</h2>
@@ -58,6 +41,9 @@ const page = async () => {
                             value={data[3].value}
                             details={data[3].details}
                         />
+                    </div>
+                    <div className={styles.rightbar}>
+                        <Srightbar />
                     </div>
                     <h2 className={styles.heading}>Courses</h2>
                     <div className={styles.courses}>
@@ -109,11 +95,7 @@ const page = async () => {
                         <Graph />
                     </div>
                 </div>
-                <div className={styles.rightbar}>
-                    <Srightbar />
-                </div>
-            </div></>) 
-            : <h1>UNAUTHORIZED !!</h1> }
+            </div></>)}
         </>
     )
 }

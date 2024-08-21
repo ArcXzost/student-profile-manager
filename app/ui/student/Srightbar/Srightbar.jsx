@@ -50,7 +50,7 @@ const Srightbar = () => {
                             <div>
                                 <h3>{task}</h3>
                             </div>
-                            <div>
+                            <div className={styles.doneButton}>
                                 <button onClick={() => markTaskAsDone(index)}>Done</button>
                             </div>
                         </div>

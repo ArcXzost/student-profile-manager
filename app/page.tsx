@@ -7,7 +7,7 @@ export default function Home() {
   return (
     <main className={styles.container}>
       <Image src="/logo.png" alt="Logo" width={200} height={200} className={styles.logo} />
-      <h1>Welcome to IIITG STUDENT MANAGEMENT PORTAL</h1>
+      <h1>Welcome to IIITG Student Management Portal</h1>
       <div className={styles.buttonContainer}>
         <Link href="/student">
           <button>STUDENT</button>

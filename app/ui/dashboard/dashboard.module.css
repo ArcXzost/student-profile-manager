@@ -4,9 +4,11 @@
 }
 
 .menu{
-    flex:1;
+    display: flex;
+    justify-content: space-between;
     background-color: var(--bgSoft);
-    padding: 20px
+    padding: 20px;
+    width: 18vw;
 }
 
 .content{

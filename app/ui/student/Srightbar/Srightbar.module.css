@@ -7,7 +7,6 @@
 }
 
 
-
 .todo input{
     padding: 10px;
     width: 100%;
@@ -47,9 +46,14 @@
 }
 
 .doneButton{
-    padding: 0.5vw;
-    border-radius: 0.5vw;
+    padding: 0.2vw;
+    margin: 0vw;
+    border-radius: 1vw;
     background-color: #0a4686;
     color: white;
     cursor: pointer;
+}
+
+.doneButton:hover{
+    background: #4188d5;
 }

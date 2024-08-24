@@ -9,6 +9,7 @@ interface StudentInfo {
 async function calculateSPI(grades: { [key: string]: string }) {
     let receivedPoints = 0;
     let totalPoints = 0;
+    let creditsMap: { [key: string]: number } = {};
     const gradeMap: { [key: string]: number } = { 'AA': 10, 'AB': 9, 'BB': 8, 'BC': 7, 'CC': 6, 'CD': 5, 'DD': 4, 'FF': 0, 'PP': 10 };
 
     const subjectKeys = Object.keys(grades).filter(key => key !== 'roll');
@@ -16,7 +17,6 @@ async function calculateSPI(grades: { [key: string]: string }) {
     try {
         const creditsQuery = `SELECT Number, Credits FROM Subjects WHERE Number = ANY($1::text[])`;
         const creditsResult = await client.query(creditsQuery, [subjectKeys.map(key => key.toUpperCase())]);
-        const creditsMap: { [key: string]: number } = {};
         creditsResult.rows.forEach(row => {
             creditsMap[row.number] = row.credits;
         });
@@ -29,14 +29,18 @@ async function calculateSPI(grades: { [key: string]: string }) {
             totalPoints += credits * 10;
             receivedPoints += credits * gradePoints;
         }
-    } finally {
+    } 
+    catch(e){
+        console.log(e);
+    }finally {
         client.release();
     }
 
     return {
         SPI: receivedPoints / totalPoints,
         TotalPoints: totalPoints,
-        ReceivedPoints: receivedPoints
+        ReceivedPoints: receivedPoints,
+        Credits: creditsMap
     };
 }
 
@@ -99,6 +103,7 @@ export async function getStudentInfo(rollNumber: string, branch: string): Promis
         semInfo.SPI = semDetails.SPI;
         semInfo.TotalPoints = semDetails.TotalPoints;
         semInfo.ReceivedPoints = semDetails.ReceivedPoints;
+        semInfo.Credits = semDetails.Credits;
 
         studentInfo[sem] = semInfo;
     }

@@ -21,6 +21,7 @@ const Layout = async ({ children }) => {
     }
 
     const user = session.user;
+    console.log(user);
     return (
         <AuthProvider>
             <div className={styles.container}>

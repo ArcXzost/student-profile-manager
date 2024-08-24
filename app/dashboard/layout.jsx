@@ -42,7 +42,6 @@ const Layout = async ({ children }) => {
 export default Layout;
 
 const menuItemsAdmin =[    {
-    title: "Pages",
     list: [
         {
             title: "Dashboard",

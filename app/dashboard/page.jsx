@@ -16,25 +16,25 @@ const data = [
     title: 'Students',
     value: 1500,
     details: 'A new batch to be added soon..',
-    icon: <FontAwesomeIcon icon={faUserGraduate} className="fas fa-user-graduate" style={{ color: "grey" }} />
+    icon: <FontAwesomeIcon icon={faUserGraduate} className="fas fa-user-graduate" style={{position: "absolute", top: "9.7vw" ,left: "29vw", color: "grey" }} />
   },
   {
     id: 2,
     title: 'Faculty',
     value: 70,
     details: 'Highest Rank: 66 (NIRF 2020)',
-    icon: <FontAwesomeIcon icon={faPersonChalkboard} className="fas fa-person-chalkboard" style={{ color: "grey" }} />
+    icon: <FontAwesomeIcon icon={faPersonChalkboard} className="fas fa-person-chalkboard" style={{position: "absolute", top: "9.7vw" ,left: "48.5vw", color: "grey" }} />
   },
   {
     id: 3,
     title: 'Courses',
     value: 100,
     details: 'CSE and ECE as core branches..',
-    icon: <FontAwesomeIcon icon={faBook} className="fas fa-book" style={{ color: "grey" }} />
+    icon: <FontAwesomeIcon icon={faBook} className="fas fa-book" style={{position: "absolute", top: "9.7vw" ,left: "69vw", color: "grey" }} />
   },
 ]
 
-const dashboard = async () => {
+const dashboard = () => {
   return (
     <>
       {(

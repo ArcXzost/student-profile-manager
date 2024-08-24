@@ -29,7 +29,7 @@ const actions = () => {
                             </div>
                         </div>
                     </form>
-                    <div className={styles.output}> Successfull!</div>
+                    <div className={styles.output}> Table added successfully <span className={styles.tick}>&#10003;</span></div>
                 </div>
                 <div className={styles.addGrades}>
                     <form action="">
@@ -45,8 +45,6 @@ const actions = () => {
 
                             <input type="text" placeholder='Enter Semester' className={styles.input} />
 
-                            <input type="text" placeholder='Enter Subject' className={styles.input} />
-
                             <input name="File" type="file" accept=".xlsx .csv" placeholder='Upload the file' className={styles.file} id='actualbtn' />
                             {/* <label for="actualbtn" className={styles.label}>Choose File</label> */}
                             <div>
@@ -54,28 +52,7 @@ const actions = () => {
                             </div>
                         </div>
                     </form>
-                    <div className={styles.output}> Successfull!</div>
-                </div>
-                <div className={styles.updateDetails}>
-                    <form action="">
-                        <div className={styles.user}>
-                            <img src="/upd.jpg" alt="user" width={100} height={100} className={styles.userImage} />
-                            <span className={styles.status + ' ' + styles.pending}>Update Institute Details of student</span>
-                        </div>
-
-                        <div>
-                            <input type="text" placeholder='Enter Roll Number' className={styles.input} />
-
-                            <input type="text" placeholder='Correct Name' className={styles.input} />
-
-                            <input type="text" placeholder='Correct Branch' className={styles.input} />
-
-                            <div>
-                                <button type="submit" className={styles.button}>Update Details</button>
-                            </div>
-                        </div>
-                    </form>
-                    <div className={styles.output}> Successfull!</div>
+                    {/* <div className={styles.output}>Marksheet Uploaded Successfully <span className={styles.tick}>&#10003;</span></div> */}
                 </div>
                 <div className={styles.updateDetails}>
                     <form action="">
@@ -98,7 +75,7 @@ const actions = () => {
                             </div>
                         </div>
                     </form>
-                    <div className={styles.output}> Successfull!</div>
+                    <div className={styles.output}>Student Details Updated! <span className={styles.tick}>&#10003;</span></div>
                 </div>
 
             </div>

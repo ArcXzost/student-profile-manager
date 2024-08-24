@@ -1,106 +1,132 @@
-import React from 'react'
-import Welcome from '../ui/student/welcome/welcome.jsx'
-import Card from '../ui/dashboard/card/card.jsx'
-import styles from '../ui/student/student.module.css'
-import Course from '../ui/student/courses/courses.jsx'
-import Graph from '../ui/student/analytics/graph.jsx'
-import Srightbar from '../ui/student/Srightbar/Srightbar.jsx'
+"use client";
+import React, { useState, useRef, useEffect } from 'react';
+import Welcome from '../ui/student/welcome/welcome.jsx';
+import Card from '../ui/dashboard/card/card.jsx';
+import Course from '../ui/student/courses/courses.jsx';
+import Graph from '../ui/student/analytics/graph.jsx';
+import Srightbar from '../ui/student/Srightbar/Srightbar.jsx';
+import styles from '../ui/student/student.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
-const page = async () => {
+const page = () => {
+    const [semester, setSemester] = useState(1);  // Default to semester 1
+    const [isOpen, setIsOpen] = useState(false);  // State to handle dropdown visibility
+    const dropdownRef = useRef(null);  // Ref for the dropdown
+    const [courses, setCourses] = useState([]);  // State to store courses
+
+    const branch = 'exampleBranch';
+    const rollNumber = '1234567';
+
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch('/api/student/getTranscript', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ branch, rollNumber })  // No need to send semester
+                });
     
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+    
+                const data = await response.json();
+                setCourses(data[semester].grades); // Assuming data is indexed by 'sem1', 'sem2', etc.
+            } catch (error) {
+                console.error('Error fetching student info:', error);
+            }
+        };
+    
+        fetchData();
+    }, [branch, rollNumber, semester]); // Fetch again if semester changes, to update displayed courses
+    
+
+    // Toggle dropdown
+    const toggleDropdown = () => setIsOpen(!isOpen);
+
+    // Handle clicking outside to close the dropdown
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsOpen(false);
+            }
+        };
+        if (isOpen) {
+            document.addEventListener("mousedown", handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [isOpen]);
+
     return (
         <>
-            {(
-                <>
-            <Welcome/>
+            <Welcome />
             <div className={styles.container}>
                 <div className={styles.wrapper}>
                     <h2 className={styles.heading}>Finance</h2>
                     <div className={styles.card}>
-                        <Card
-                            key={data[0].id}
-                            title={data[0].title}
-                            value={data[0].value}
-                            details={data[0].details}
-                        />
-                        <Card
-                            key={data[1].id}
-                            title={data[1].title}
-                            value={data[1].value}
-                            details={data[1].details}
-                        />
-                        <Card
-                            key={data[2].id}
-                            title={data[2].title}
-                            value={data[2].value}
-                            details={data[2].details}
-                        />
-                        <Card
-                            key={data[3].id}
-                            title={data[3].title}
-                            value={data[3].value}
-                            details={data[3].details}
-                        />
+                        {data.map((item) => (
+                            <Card
+                                key={item.id}
+                                title={item.title}
+                                value={item.value}
+                                details={item.details}
+                            />
+                        ))}
                     </div>
                     <div className={styles.rightbar}>
                         <Srightbar />
                     </div>
-                    <h2 className={styles.heading}>Courses</h2>
+                    <div className={styles.headingContainer} ref={dropdownRef}>
+                        <h2 className={styles.heading} onClick={toggleDropdown}>
+                            Courses
+                            <FontAwesomeIcon icon={faChevronDown} className={styles.dropdownIcon} />
+                        </h2>
+                        {isOpen && (
+                            <div className={styles.dropdownMenu}>
+                                {Array.from({ length: 8 }, (_, i) => (
+                                    <div
+                                        key={i + 1}
+                                        className={styles.dropdownItem}
+                                        onClick={() => {
+                                            setSemester(i + 1);
+                                            setIsOpen(false);
+                                        }}
+                                    >
+                                        Semester {i + 1}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                     <div className={styles.courses}>
-                        <Course
-                            key={data1[0].id}
-                            Course={data1[0].Course}
-                            Code={data1[0].Code}
-                            Credit={data1[0].Credit}
-                            grade={data1[0].grade}
-                        />
-                        <Course
-                            key={data1[1].id}
-                            Course={data1[1].Course}
-                            Code={data1[1].Code}
-                            Credit={data1[1].Credit}
-                            grade={data1[1].grade}
-                        />
-                        <Course
-                            key={data1[2].id}
-                            Course={data1[2].Course}
-                            Code={data1[2].Code}
-                            Credit={data1[2].Credit}
-                            grade={data1[2].grade}
-                        />
-                        <Course
-                            key={data1[3].id}
-                            Course={data1[3].Course}
-                            Code={data1[3].Code}
-                            Credit={data1[3].Credit}
-                            grade={data1[3].grade}
-                        />
-                        <Course
-                            key={data1[4].id}
-                            Course={data1[4].Course}
-                            Code={data1[4].Code}
-                            Credit={data1[4].Credit}
-                            grade={data1[4].grade}
-                        />
-                        <Course
-                            key={data1[5].id}
-                            Course={data1[5].Course}
-                            Code={data1[5].Code}
-                            Credit={data1[5].Credit}
-                            grade={data1[5].grade}
-                        />
+                        {data1.map((course) => (
+                            <Course
+                                key={course.id}
+                                Course={course.Course}
+                                Code={course.Code}
+                                Credit={course.Credit}
+                                grade={course.grade}
+                            />
+                        ))}
                     </div>
                     <div className={styles.analytics}>
                         <h2 className={styles.heading}>Analytics</h2>
                         <Graph />
                     </div>
                 </div>
-            </div></>)}
+            </div>
         </>
-    )
-}
+    );
+};
 
-export default page
+export default page;
+
 
 const data = [
     {
@@ -154,22 +180,22 @@ const data1 = [
     },
     {
         id: 4,
-        Course: 'Computer Science',
+        Course: 'C Programming',
         Code: 'CS101',
         Credit: 6,
         grade: 'AA'
     },
     {
         id: 5,
-        Course: 'DSA',
+        Course: 'Data Structures',
         Code: 'CS102',
         Credit: 6,
         grade: 'AB'
     },
     {
         id: 6,
-        Course: 'Engineering Drawing',
-        Code: 'ME101',
+        Course: 'Digital Design',
+        Code: 'EC104',
         Credit: 6,
         grade: 'BB'
     }

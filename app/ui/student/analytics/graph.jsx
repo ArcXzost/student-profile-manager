@@ -1,79 +1,65 @@
 'use client';
-import React from 'react'
-import { BarChart, Bar, Rectangle, XAxis, YAxis, d, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import styles from './graph.module.css'
+import React from 'react';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import styles from './graph.module.css';
 
+// Student analytical data
 const data = [
     {
-        name: 'Page A',
-        uv: 4000,
-        pv: 2400,
-        amt: 2400,
+        semester: 'Semester 1',
+        spi: 8.43,
+        highest: 10,
     },
     {
-        name: 'Page B',
-        uv: 3000,
-        pv: 1398,
-        amt: 2210,
+        semester: 'Semester 2',
+        spi: 7.85,
+        highest: 10,
     },
     {
-        name: 'Page C',
-        uv: 2000,
-        pv: 9800,
-        amt: 2290,
+        semester: 'Semester 3',
+        spi: 8.77,
+        highest: 10,
     },
     {
-        name: 'Page D',
-        uv: 2780,
-        pv: 3908,
-        amt: 2000,
+        semester: 'Semester 4',
+        spi: 8.31,
+        highest: 10,
     },
     {
-        name: 'Page E',
-        uv: 1890,
-        pv: 4800,
-        amt: 2181,
+        semester: 'Semester 5',
+        spi: 8.11,
+        highest: 10,
     },
     {
-        name: 'Page F',
-        uv: 2390,
-        pv: 3800,
-        amt: 2500,
+        semester: 'Semester 6',
+        spi: 8.24,
+        highest: 10,
     },
     {
-        name: 'Page G',
-        uv: 3490,
-        pv: 4300,
-        amt: 2100,
+        semester: 'Semester 7',
+        spi: 9,
+        highest: 10,
+    },
+    {
+        semester: 'Semester 8',
+        spi: 9.12,
+        highest: 10,
     },
 ];
 
 const Graph = () => {
     return (
-        <div className={styles.container}>
-            <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                    width={500}
-                    height={300}
-                    data={data}
-                    margin={{
-                        top: 5,
-                        right: 30,
-                        left: 20,
-                        bottom: 5,
-                    }}
-                >
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="pv" fill="#8884d8" activeBar={<Rectangle fill="pink" stroke="blue" />} />
-                    <Bar dataKey="uv" fill="#82ca9d" activeBar={<Rectangle fill="gold" stroke="purple" />} />
-                </BarChart>
-            </ResponsiveContainer>
-        </div>
-    )
-}
+        <ResponsiveContainer width="100%" height={400}>
+            <BarChart data={data} className={styles.chart}>
+                <XAxis dataKey="semester" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="spi" fill="#8884d8" name="SPI" />
+                <Bar dataKey="highest" fill="#82ca9d" name="Highest SPI" />
+            </BarChart>
+        </ResponsiveContainer>
+    );
+};
 
-export default Graph
-
+export default Graph;

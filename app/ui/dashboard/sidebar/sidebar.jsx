@@ -7,13 +7,13 @@ import { config } from "@fortawesome/fontawesome-svg-core";
 config.autoAddCss = false;
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 
 const sidebar = ({ Name, Role, menuItems }) => {
   const router = useRouter();
   const handleLogout = () => {
-    router.push('/');
-  };
+    router.push("/");
+  }
   return (
     <div className={styles.container}>
       <div className={styles.user}>
